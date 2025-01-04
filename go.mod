@@ -1,4 +1,4 @@
-module github.com/tnqbao/gau_validation
+module github.com/tnqbao/go_template
 
 go 1.22.5
 
