@@ -3,13 +3,11 @@
 package main
 
 import (
-	"github.com/tnqbao/gau_blog_service/api/vote"
-	"github.com/tnqbao/gau_blog_service/lib/ai"
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/tnqbao/gau_blog_service/config"
-	"github.com/tnqbao/gau_blog_service/routes"
+	"github.com/tnqbao/gau_phim_backend/config"
+	"github.com/tnqbao/gau_phim_backend/routes"
 )
 
 func main() {
@@ -24,5 +22,5 @@ func main() {
 	ai.LoadAPIKeys()
 	router := routes.SetupRouter(db)
 	go vote.StartSyncJob(db)
-	router.Run(":8085")
+	router.Run(":8083")
 }
