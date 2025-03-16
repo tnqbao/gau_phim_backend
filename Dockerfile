@@ -7,6 +7,6 @@ RUN go build -tags 'prod' -o main .
 
 FROM alpine:latest
 WORKDIR /gau_phim
-COPY --from=builder /gau_blog/main .
+COPY --from=builder /gau_phim/main .
 EXPOSE 8083
 CMD ["./main"]
