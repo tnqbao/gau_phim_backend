@@ -39,5 +39,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/gau
-            sh start.sh
+            cd ~/docker-services/gauphim-application
+            sh restart_gau_phim_backend.sh

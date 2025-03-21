@@ -10,6 +10,8 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/url"
+	"time"
 )
 
 func CreateMovie(c *gin.Context) {
@@ -20,8 +22,10 @@ func CreateMovie(c *gin.Context) {
 
 func CrawlMovieFromUrl(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
+	params := url.Values{}
 	var req utils.Request
 
+	count := 0
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println("UserRequest binding error:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -42,7 +46,8 @@ func CrawlMovieFromUrl(c *gin.Context) {
 	amountPage := int(math.Ceil(float64(*req.Amount) / 24))
 
 	for i := 1; i <= amountPage; i++ {
-		url := fmt.Sprintf("%s&page=%d", *req.Endpoint, i)
+		params.Set("page", fmt.Sprintf("%d", i))
+		url := fmt.Sprintf("%s?%s", *req.Endpoint, params.Encode())
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Printf("Lỗi khi gọi API trang %d: %v", i, err)
@@ -50,6 +55,7 @@ func CrawlMovieFromUrl(c *gin.Context) {
 		}
 
 		defer resp.Body.Close()
+
 		var apiResp utils.ApiResponse
 		if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
 			log.Printf("Lỗi khi decode JSON trang %d: %v", i, err)
@@ -85,20 +91,27 @@ func CrawlMovieFromUrl(c *gin.Context) {
 				countries = append(countries, nation)
 			}
 
+			modifiedTime, err := time.Parse(time.RFC3339, item.Modified.Time)
+			if err != nil {
+				log.Printf("Lỗi khi parse thời gian %s: %v", item.Modified.Time, err)
+				modifiedTime = time.Now()
+			}
+
 			movie := models.Movie{
-				Title:       item.Name,
-				Slug:        item.Slug,
-				Year:        item.Year,
-				Description: fmt.Sprintf("%s (%s)", item.OriginName, item.Type),
-				PosterURL:   item.PosterURL,
-				ThumbUrl:    item.ThumbURL,
-				Categories:  categories,
-				Nations:     countries,
-				Type:        item.Type,
+				Title:      item.Name,
+				Slug:       item.Slug,
+				Year:       item.Year,
+				PosterURL:  item.PosterURL,
+				ThumbUrl:   item.ThumbURL,
+				Categories: categories,
+				Nations:    countries,
+				Type:       item.Type,
+				Modified:   modifiedTime,
 			}
 
 			if err := db.Create(&movie).Error; err != nil {
 				log.Printf("Lỗi khi lưu phim %s: %v", movie.Title, err)
+				count++
 			} else {
 				log.Printf("Đã lưu phim: %s", movie.Title)
 			}
@@ -109,6 +122,6 @@ func CrawlMovieFromUrl(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Crawl movie from URL hoàn tất",
-		"req":     req,
+		"Đã thêm": count,
 	})
 }

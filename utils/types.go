@@ -16,6 +16,13 @@ type Request struct {
 	OriginTitle *string            `json:"origin_title"`
 	Nations     *[]models.Nation   `json:"nations"`
 	Categories  *[]models.Category `json:"categories"`
+	Movies      *[]struct {
+		Slug        *string `json:"slug"`
+		Name        *string `json:"name"`
+		PosterUrl   *string `json:"poster_url"`
+		ThumbUrl    *string `json:"thumb_url"`
+		Description *string `json:"description"`
+	} `json:"movies	"`
 }
 
 type ApiResponse struct {
@@ -31,6 +38,9 @@ type ApiResponse struct {
 			Year       int    `json:"year"`
 			Quality    string `json:"quality"`
 			Lang       string `json:"lang"`
+			Modified   struct {
+				Time string `json:"time"`
+			} `json:"modified"`
 			Categories []struct {
 				Name string `json:"name"`
 				Slug string `json:"slug"`

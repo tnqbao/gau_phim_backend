@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Movie struct {
 	ID          int        `gorm:"primary_key" json:"id"`
 	Title       string     `json:"title"`
@@ -11,4 +13,5 @@ type Movie struct {
 	Nations     []Nation   `gorm:"many2many:movie_nations;"`
 	Categories  []Category `gorm:"many2many:movie_categories;"`
 	Type        string     `json:"type"`
+	Modified    time.Time  `json:"modified"`
 }
