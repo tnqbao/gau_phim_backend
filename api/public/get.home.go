@@ -13,27 +13,30 @@ func GetHomePageData(c *gin.Context) {
 	client := config.GetRedisClient()
 
 	values, _ := client.MGet(ctx,
-		"hero_list", "hero_description",
+		"hero_list", "hero_description", "hero_name",
 		"release_homepage", "release_name", "release_year",
 		"featured_homepage", "featured_name", "featured_year",
 	).Result()
 
 	heroSlugs, _ := values[0].(string)
 	heroDescriptions, _ := values[1].(string)
-	releaseSlugs, _ := values[2].(string)
-	releaseNames, _ := values[3].(string)
-	releaseYears, _ := values[4].(string)
-	featuredSlugs, _ := values[5].(string)
-	featuredNames, _ := values[6].(string)
-	featuredYears, _ := values[7].(string)
+	heroNames, _ := values[2].(string)
+	releaseSlugs, _ := values[3].(string)
+	releaseNames, _ := values[4].(string)
+	releaseYears, _ := values[5].(string)
+	featuredSlugs, _ := values[6].(string)
+	featuredNames, _ := values[7].(string)
+	featuredYears, _ := values[8].(string)
 
 	heroList := []map[string]string{}
 	heroSlugArr := strings.Split(heroSlugs, "@")
 	heroDescriptionArr := strings.Split(heroDescriptions, "@")
+	heroNameArr := strings.Split(heroNames, "@")
 	for i := range heroSlugArr {
 		if i < len(heroDescriptionArr) {
 			heroList = append(heroList, map[string]string{
 				"slug":        heroSlugArr[i],
+				"name":        heroNameArr[i],
 				"description": heroDescriptionArr[i],
 			})
 		}
