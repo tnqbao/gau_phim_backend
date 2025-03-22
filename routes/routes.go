@@ -19,9 +19,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	apiRoutes := r.Group("/api/gauflix")
 	{
-		publicRouter := r.Group("/")
+		publicRouter := apiRoutes.Group("/")
 		{
-			publicRouter.GET("/home", public.GetHomePageData)
+			publicRouter.GET("/home-page", public.GetHomePageData)
 		}
 		adminRoutes := apiRoutes.Group("/")
 		{
