@@ -15,7 +15,7 @@ func GetHomePageData(c *gin.Context) {
 	values, _ := client.MGet(ctx,
 		"hero_list", "hero_description", "hero_name",
 		"release_homepage_list", "release_homepage_name", "release_homepage_year",
-		"featured_homepage_homepage", "featured_homepage_name", "featured_homepage_year",
+		"featured_homepage_list", "featured_homepage_name", "featured_homepage_year",
 	).Result()
 
 	heroSlugs, _ := values[0].(string)
