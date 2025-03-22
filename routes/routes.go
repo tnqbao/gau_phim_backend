@@ -23,7 +23,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		{
 			publicRouter.GET("/home", public.GetHomePageData)
 		}
-		adminRoutes := apiRoutes.Group("/admin")
+		adminRoutes := apiRoutes.Group("/")
 		{
 			adminRoutes.Use(middlewares.AuthMiddleware(), middlewares.AdminMiddleware())
 			adminRoutes.PUT("/crawl", movie.CrawlMovieFromUrl)

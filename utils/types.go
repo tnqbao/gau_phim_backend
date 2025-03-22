@@ -22,6 +22,7 @@ type Request struct {
 		PosterUrl   *string `json:"poster_url"`
 		ThumbUrl    *string `json:"thumb_url"`
 		Description *string `json:"description"`
+		Year        *string `json:"year"`
 	} `json:"movies	"`
 }
 
