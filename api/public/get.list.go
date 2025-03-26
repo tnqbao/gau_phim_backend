@@ -42,7 +42,7 @@ func GetListMovieByType(c *gin.Context) {
 	if slug == "new-release" {
 		db.Model(&models.Movie{}).
 			Select("title, year, poster_url, thumb_url, slug").
-			Order("year desc").
+			Order("modified desc").
 			Limit(24).
 			Offset((page - 1) * 24).
 			Find(&movies)
@@ -50,7 +50,7 @@ func GetListMovieByType(c *gin.Context) {
 		db.Model(&models.Movie{}).
 			Select("title, year, poster_url, thumb_url, slug").
 			Where("type = ?", slug).
-			Order("year desc").
+			Order("modified desc").
 			Limit(24).
 			Offset((page - 1) * 24).
 			Find(&movies)
