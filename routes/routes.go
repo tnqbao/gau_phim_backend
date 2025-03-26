@@ -22,6 +22,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		publicRouter := apiRoutes.Group("/")
 		{
 			publicRouter.GET("/home-page", public.GetHomePageData)
+			publicRouter.GET("/category/:slug", public.GetListMovieByCategory)
+			publicRouter.GET("/type/:slug", public.GetListMovieByType)
+			publicRouter.GET("/nation/:slug", public.GetListMovieByNation)
+
 		}
 		adminRoutes := apiRoutes.Group("/")
 		{

@@ -1,13 +1,10 @@
 package public
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/tnqbao/gau_phim_backend/config"
 	"strings"
 )
-
-var ctx = context.Background()
 
 func GetHomePageData(c *gin.Context) {
 	client := config.GetRedisClient()
