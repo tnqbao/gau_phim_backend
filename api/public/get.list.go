@@ -39,14 +39,22 @@ func GetListMovieByType(c *gin.Context) {
 		ThumbURL  string `json:"thumb_url"`
 		Slug      string `json:"slug"`
 	}
-
-	db.Model(&models.Movie{}).
-		Select("title, year, poster_url, thumb_url, slug").
-		Where("type = ?", slug).
-		Order("year desc").
-		Limit(24).
-		Offset((page - 1) * 24).
-		Find(&movies)
+	if slug == "new-release" {
+		db.Model(&models.Movie{}).
+			Select("title, year, poster_url, thumb_url, slug").
+			Order("year desc").
+			Limit(24).
+			Offset((page - 1) * 24).
+			Find(&movies)
+	} else {
+		db.Model(&models.Movie{}).
+			Select("title, year, poster_url, thumb_url, slug").
+			Where("type = ?", slug).
+			Order("year desc").
+			Limit(24).
+			Offset((page - 1) * 24).
+			Find(&movies)
+	}
 
 	var totalItems int64
 	db.Model(&models.Movie{}).Where("type = ?", slug).Count(&totalItems)
