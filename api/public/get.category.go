@@ -44,7 +44,7 @@ func GetListMovieByCategory(c *gin.Context) {
 		Joins("JOIN movie_categories mc ON movies.id = mc.movie_id").
 		Joins("JOIN categories c ON mc.category_id = c.id").
 		Where("c.slug = ?", slug).
-		Order("movies.modified DESC").
+		Order("movies.year DESC, movies.modified DESC").
 		Limit(24).
 		Offset((page - 1) * 24).
 		Find(&movies)

@@ -44,7 +44,7 @@ func GetListMovieByNation(c *gin.Context) {
 		Joins("JOIN movie_nations mn ON movies.id = mn.movie_id").
 		Joins("JOIN nations n ON mn.nation_id = n.id").
 		Where("n.slug = ?", slug).
-		Order("movies.modified DESC").
+		Order("movies.year DESC, movies.modified DESC").
 		Limit(24).
 		Offset((page - 1) * 24).
 		Find(&movies)
