@@ -91,6 +91,7 @@ func CrawlMovieFromUrl(c *gin.Context) {
 				countries = append(countries, nation)
 			}
 
+			// Parse modified time
 			modifiedTime, err := time.Parse(time.RFC3339, item.Modified.Time)
 			if err != nil {
 				log.Printf("Lỗi khi parse thời gian %s: %v", item.Modified.Time, err)
@@ -111,8 +112,8 @@ func CrawlMovieFromUrl(c *gin.Context) {
 
 			if err := db.Create(&movie).Error; err != nil {
 				log.Printf("Lỗi khi lưu phim %s: %v", movie.Title, err)
-				count++
 			} else {
+				count++
 				log.Printf("Đã lưu phim: %s", movie.Title)
 			}
 		}
