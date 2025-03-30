@@ -45,16 +45,16 @@ func GetHomePageData(c *gin.Context) {
 		json.Unmarshal([]byte(releaseCache), &releaseList)
 	} else {
 		var movies []struct {
-			Slug string `json:"slug"`
-			Name string `json:"name"`
-			Year string `json:"year"`
+			Slug  string `json:"slug"`
+			Title string `json:"title"`
+			Year  string `json:"year"`
 		}
-		db.Table("movies").Select("slug, name, year").Limit(24).Scan(&movies)
+		db.Table("movies").Select("slug, title, year").Limit(24).Scan(&movies)
 
 		for _, movie := range movies {
 			releaseList = append(releaseList, map[string]string{
 				"slug": movie.Slug,
-				"name": movie.Name,
+				"name": movie.Title,
 				"year": movie.Year,
 			})
 		}
