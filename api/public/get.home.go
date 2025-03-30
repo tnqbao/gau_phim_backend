@@ -39,28 +39,42 @@ func GetHomePageData(c *gin.Context) {
 		}
 	}
 
+	var releaseList, listSingle, listSeries, listCartoon []map[string]string
+
 	releaseCache, err := client.Get(ctx, "release_list").Result()
-	var releaseList []map[string]string
 	if err == nil {
 		json.Unmarshal([]byte(releaseCache), &releaseList)
 	} else {
-		var movies []struct {
-			Slug  string `json:"slug"`
-			Title string `json:"title"`
-			Year  string `json:"year"`
-		}
-		db.Table("movies").Select("slug, title, year").Limit(24).Scan(&movies)
-
-		for _, movie := range movies {
-			releaseList = append(releaseList, map[string]string{
-				"slug": movie.Slug,
-				"name": movie.Title,
-				"year": movie.Year,
-			})
-		}
-
+		releaseList = fetchMoviesByType(db, "", 24)
 		releaseJSON, _ := json.Marshal(releaseList)
 		client.Set(ctx, "release_list", releaseJSON, 30*time.Second)
+	}
+
+	listSingleCache, err := client.Get(ctx, "single_list").Result()
+	if err == nil {
+		json.Unmarshal([]byte(listSingleCache), &listSingle)
+	} else {
+		listSingle = fetchMoviesByType(db, "single", 24)
+		listSingleJSON, _ := json.Marshal(listSingle)
+		client.Set(ctx, "single_list", listSingleJSON, 30*time.Second)
+	}
+
+	listSeriesCache, err := client.Get(ctx, "series_list").Result()
+	if err == nil {
+		json.Unmarshal([]byte(listSeriesCache), &listSeries)
+	} else {
+		listSeries = fetchMoviesByType(db, "series", 24)
+		listSeriesJSON, _ := json.Marshal(listSeries)
+		client.Set(ctx, "series_list", listSeriesJSON, 30*time.Second)
+	}
+
+	listCartoonCache, err := client.Get(ctx, "cartoon_list").Result()
+	if err == nil {
+		json.Unmarshal([]byte(listCartoonCache), &listCartoon)
+	} else {
+		listCartoon = fetchMoviesByType(db, "hoathinh", 24)
+		listCartoonJSON, _ := json.Marshal(listCartoon)
+		client.Set(ctx, "cartoon_list", listCartoonJSON, 30*time.Second)
 	}
 
 	featuredList := []map[string]string{}
@@ -81,5 +95,31 @@ func GetHomePageData(c *gin.Context) {
 		"hero":     heroList,
 		"release":  releaseList,
 		"featured": featuredList,
+		"single":   listSingle,
+		"series":   listSeries,
+		"cartoon":  listCartoon,
 	})
+}
+
+func fetchMoviesByType(db *gorm.DB, movieType string, limit int) []map[string]string {
+	var movies []struct {
+		Slug  string `json:"slug"`
+		Title string `json:"title"`
+		Year  string `json:"year"`
+	}
+	query := db.Table("movies").Select("slug, title, year").Order("year DESC, modified DESC").Limit(limit)
+	if movieType != "" {
+		query = query.Where("type = ?", movieType)
+	}
+	query.Scan(&movies)
+
+	var movieList []map[string]string
+	for _, movie := range movies {
+		movieList = append(movieList, map[string]string{
+			"slug": movie.Slug,
+			"name": movie.Title,
+			"year": movie.Year,
+		})
+	}
+	return movieList
 }
