@@ -44,8 +44,9 @@ func GetHomePageData(c *gin.Context) {
 	releaseCache, err := client.Get(ctx, "release_list").Result()
 	if err == nil {
 		json.Unmarshal([]byte(releaseCache), &releaseList)
+		client.Expire(ctx, "release_list", 15*time.Second)
 	} else {
-		releaseList = fetchMoviesByType(db, "", 24)
+		releaseList = fetchMoviesByType(db, "", 12)
 		releaseJSON, _ := json.Marshal(releaseList)
 		client.Set(ctx, "release_list", releaseJSON, 30*time.Second)
 	}
@@ -53,8 +54,9 @@ func GetHomePageData(c *gin.Context) {
 	listSingleCache, err := client.Get(ctx, "single_list").Result()
 	if err == nil {
 		json.Unmarshal([]byte(listSingleCache), &listSingle)
+		client.Expire(ctx, "single_list", 15*time.Second)
 	} else {
-		listSingle = fetchMoviesByType(db, "single", 24)
+		listSingle = fetchMoviesByType(db, "single", 12)
 		listSingleJSON, _ := json.Marshal(listSingle)
 		client.Set(ctx, "single_list", listSingleJSON, 30*time.Second)
 	}
@@ -62,8 +64,10 @@ func GetHomePageData(c *gin.Context) {
 	listSeriesCache, err := client.Get(ctx, "series_list").Result()
 	if err == nil {
 		json.Unmarshal([]byte(listSeriesCache), &listSeries)
+		client.Expire(ctx, "series_list", 15*time.Second)
+
 	} else {
-		listSeries = fetchMoviesByType(db, "series", 24)
+		listSeries = fetchMoviesByType(db, "series", 12)
 		listSeriesJSON, _ := json.Marshal(listSeries)
 		client.Set(ctx, "series_list", listSeriesJSON, 30*time.Second)
 	}
@@ -71,8 +75,9 @@ func GetHomePageData(c *gin.Context) {
 	listCartoonCache, err := client.Get(ctx, "cartoon_list").Result()
 	if err == nil {
 		json.Unmarshal([]byte(listCartoonCache), &listCartoon)
+		client.Expire(ctx, "cartoon_list", 15*time.Second)
 	} else {
-		listCartoon = fetchMoviesByType(db, "hoathinh", 24)
+		listCartoon = fetchMoviesByType(db, "hoathinh", 12)
 		listCartoonJSON, _ := json.Marshal(listCartoon)
 		client.Set(ctx, "cartoon_list", listCartoonJSON, 30*time.Second)
 	}
