@@ -52,6 +52,45 @@ func AddMovieLiked(c *gin.Context) {
 	})
 }
 
+func RemoveMovieLiked(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+
+	id := c.MustGet("user_id")
+	if id == nil {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		c.Abort()
+		return
+	}
+	userID := id.(int)
+
+	var req utils.Request
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	var movie models.Movie
+	if err := db.First(&movie, "slug = ?", req.Slug).Error; err != nil {
+		c.JSON(404, gin.H{"error": "Movie not found"})
+		return
+	}
+
+	var like models.MovieLike
+	if err := db.Where("user_id = ? AND movie_id = ?", userID, movie.ID).First(&like).Error; err != nil {
+		c.JSON(400, gin.H{"error": "You have not liked this movie"})
+		return
+	}
+
+	if err := db.Delete(&like).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to remove like"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"status":  200,
+		"message": "Removed like successfully",
+	})
+}
 func GetListMovieLiked(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
