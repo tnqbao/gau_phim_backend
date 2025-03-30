@@ -23,9 +23,11 @@ type Request struct {
 		ThumbUrl    *string `json:"thumb_url"`
 		Description *string `json:"description"`
 		Year        *string `json:"year"`
-	} `json:"movies	"`
+		Modified    *struct {
+			Time string `json:"time"`
+		} `json:"modified"`
+	} `json:"movies"`
 }
-
 type ApiResponse struct {
 	Data struct {
 		Items []struct {
