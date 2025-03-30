@@ -1,29 +1,29 @@
 package public
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/tnqbao/gau_phim_backend/config"
+	"gorm.io/gorm"
 	"strings"
+	"time"
 )
 
 func GetHomePageData(c *gin.Context) {
 	client := config.GetRedisClient()
+	db := c.MustGet("db").(*gorm.DB)
 
 	values, _ := client.MGet(ctx,
 		"hero_list", "hero_description", "hero_name",
-		"release_homepage_list", "release_homepage_name", "release_homepage_year",
 		"featured_homepage_list", "featured_homepage_name", "featured_homepage_year",
 	).Result()
 
 	heroSlugs, _ := values[0].(string)
 	heroDescriptions, _ := values[1].(string)
 	heroNames, _ := values[2].(string)
-	releaseSlugs, _ := values[3].(string)
-	releaseNames, _ := values[4].(string)
-	releaseYears, _ := values[5].(string)
-	featuredSlugs, _ := values[6].(string)
-	featuredNames, _ := values[7].(string)
-	featuredYears, _ := values[8].(string)
+	featuredSlugs, _ := values[3].(string)
+	featuredNames, _ := values[4].(string)
+	featuredYears, _ := values[5].(string)
 
 	heroList := []map[string]string{}
 	heroSlugArr := strings.Split(heroSlugs, "@")
@@ -39,18 +39,28 @@ func GetHomePageData(c *gin.Context) {
 		}
 	}
 
-	releaseList := []map[string]string{}
-	releaseSlugArr := strings.Split(releaseSlugs, "@")
-	releaseNameArr := strings.Split(releaseNames, "@")
-	releaseYearArr := strings.Split(releaseYears, "@")
-	for i := range releaseSlugArr {
-		if i < len(releaseNameArr) && i < len(releaseYearArr) {
+	releaseCache, err := client.Get(ctx, "release_list").Result()
+	var releaseList []map[string]string
+	if err == nil {
+		json.Unmarshal([]byte(releaseCache), &releaseList)
+	} else {
+		var movies []struct {
+			Slug string `json:"slug"`
+			Name string `json:"name"`
+			Year string `json:"year"`
+		}
+		db.Table("movie").Select("slug, name, year").Limit(24).Scan(&movies)
+
+		for _, movie := range movies {
 			releaseList = append(releaseList, map[string]string{
-				"slug": releaseSlugArr[i],
-				"name": releaseNameArr[i],
-				"year": releaseYearArr[i],
+				"slug": movie.Slug,
+				"name": movie.Name,
+				"year": movie.Year,
 			})
 		}
+
+		releaseJSON, _ := json.Marshal(releaseList)
+		client.Set(ctx, "release_list", releaseJSON, 30*time.Second)
 	}
 
 	featuredList := []map[string]string{}
