@@ -49,7 +49,7 @@ func GetHomePageData(c *gin.Context) {
 			Name string `json:"name"`
 			Year string `json:"year"`
 		}
-		db.Table("movie").Select("slug, name, year").Limit(24).Scan(&movies)
+		db.Table("movies").Select("slug, name, year").Limit(24).Scan(&movies)
 
 		for _, movie := range movies {
 			releaseList = append(releaseList, map[string]string{
