@@ -26,7 +26,7 @@ func GetHistoryView(c *gin.Context) {
 	historyView := []models.History{}
 	if err := db.
 		Model(&models.History{}).
-		Select("slug, name, poster_url, movie_episode, created_at").
+		Select("slug, title, poster_url, movie_episode, created_at").
 		Where("user_id = ?", userId).
 		Order("year DESC, modified DESC").
 		Limit(24).
