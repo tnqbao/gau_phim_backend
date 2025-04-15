@@ -1,6 +1,7 @@
 package authed
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/tnqbao/gau_phim_backend/models"
 	"github.com/tnqbao/gau_phim_backend/utils"
@@ -50,7 +51,7 @@ func GetHistoryView(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "No history view found"})
 		return
 	}
-	
+
 	c.JSON(200, gin.H{"history": historyView, "current_page": page, "total_page": totalPage})
 }
 
@@ -81,13 +82,24 @@ func UpdateHistoryView(c *gin.Context) {
 		MovieEpisode: req.MovieEpisode,
 		CreateAt:     time.Now().Format("2006-01-02 15:04:05"),
 	}
-	if err := db.Where("user_id = ? AND movie_slug = ?", userId, req.MovieSlug).First(&historyView).Error; err != nil {
-		if err := db.Create(&historyView).Error; err != nil {
-			c.JSON(500, gin.H{"error": "Failed to create history view"})
+	var existing models.History
+	if err := db.Where("user_id = ? AND movie_slug = ?", userId, req.MovieSlug).First(&existing).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			if err := db.Create(&historyView).Error; err != nil {
+				c.JSON(500, gin.H{"error": "Failed to create history view"})
+				return
+			}
+		} else {
+			c.JSON(500, gin.H{"error": "DB error when checking history"})
 			return
 		}
 	} else {
-		if err := db.Save(&historyView).Error; err != nil {
+		existing.MovieEpisode = req.MovieEpisode
+		existing.CreateAt = time.Now().Format("2006-01-02 15:04:05")
+		if req.MoviePoster != nil {
+			existing.MoviePoster = *req.MoviePoster
+		}
+		if err := db.Save(&existing).Error; err != nil {
 			c.JSON(500, gin.H{"error": "Failed to update history view"})
 			return
 		}

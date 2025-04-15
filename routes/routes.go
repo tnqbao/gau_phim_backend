@@ -40,6 +40,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 		authedRoutes := apiRoutes.Group("/")
 		{
+			authedRoutes.Use(middlewares.AuthMiddleware())
 			authedRoutes.POST("/like", authed.AddMovieLiked)
 			authedRoutes.GET("/likes", authed.GetListMovieLiked)
 			authedRoutes.DELETE("/like", authed.RemoveMovieLiked)
