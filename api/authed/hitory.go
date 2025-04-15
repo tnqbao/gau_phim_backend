@@ -26,7 +26,6 @@ func GetHistoryView(c *gin.Context) {
 	historyView := []models.History{}
 	if err := db.
 		Model(&models.History{}).
-		Select("slug, name, poster_url, episode, created_at").
 		Where("user_id = ?", userId).
 		Order("year DESC, modified DESC").
 		Limit(24).
@@ -84,7 +83,7 @@ func UpdateHistoryView(c *gin.Context) {
 		CreateAt:     time.Now().Format("2006-01-02 15:04:05"),
 	}
 	var existing models.History
-	if err := db.Where("user_id = ? AND movie_slug = ?", userId, req.MovieSlug).First(&existing).Error; err != nil {
+	if err := db.Where("user_id = ? AND slug = ?", userId, req.MovieSlug).First(&existing).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if err := db.Create(&historyView).Error; err != nil {
 				c.JSON(500, gin.H{"error": "Failed to create history view"})
