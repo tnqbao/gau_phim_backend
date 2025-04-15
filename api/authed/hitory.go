@@ -23,11 +23,16 @@ func GetHistoryView(c *gin.Context) {
 	}
 
 	historyView := []models.History{}
-	if err := db.Where("user_id = ?", userId).
+	if err := db.
+		Model(&models.History{}).
+		Select("slug, name, poster_url, episode, created_at").
+		Where("user_id = ?", userId).
 		Order("year DESC, modified DESC").
 		Limit(24).
 		Offset((page - 1) * 24).
 		Find(&historyView).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch history view"})
+		return
 	}
 
 	var totalIteam int64
@@ -45,7 +50,7 @@ func GetHistoryView(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "No history view found"})
 		return
 	}
-
+	
 	c.JSON(200, gin.H{"history": historyView, "current_page": page, "total_page": totalPage})
 }
 
