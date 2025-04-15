@@ -29,6 +29,16 @@ func GetHistoryView(c *gin.Context) {
 		Offset((page - 1) * 24).
 		Find(&historyView).Error; err != nil {
 	}
+
+	var totalIteam int64
+	if err := db.Model(&models.History{}).
+		Where("user_id = ?", userId).
+		Count(&totalIteam).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to get total items"})
+	}
+
+	totalPage := totalIteam / 24
+
 	c.JSON(500, gin.H{"error": "Fail to get history view"})
 
 	if len(historyView) == 0 {
@@ -36,13 +46,12 @@ func GetHistoryView(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, historyView)
+	c.JSON(200, gin.H{"history": historyView, "current_page": page, "total_page": totalPage})
 }
 
 func UpdateHistoryView(c *gin.Context) {
 	userId, exists := c.Get("user_id")
 	db := c.MustGet("db").(*gorm.DB)
-
 	var req utils.HistoryRequest
 	if !exists {
 		c.JSON(401, gin.H{"error": "User ID not found in context"})
