@@ -7,7 +7,7 @@
 # IDEs
 .idea/
 .vscode/
-
+pkg
 # System files
 .DS_Store
 Thumbs.db

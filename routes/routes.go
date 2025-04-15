@@ -43,6 +43,11 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			authedRoutes.POST("/like", authed.AddMovieLiked)
 			authedRoutes.GET("/likes", authed.GetListMovieLiked)
 			authedRoutes.DELETE("/like", authed.RemoveMovieLiked)
+
+			authedRoutes.GET("/history", authed.GetHistoryView)
+			authedRoutes.POST("/history", authed.UpdateHistoryView)
+			authedRoutes.DELETE("/history/:slug", authed.DeleteHistoryViewForSlug)
+			authedRoutes.DELETE("/history", authed.DeleteAllHistoryView)
 		}
 
 	}

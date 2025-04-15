@@ -55,3 +55,10 @@ type ApiResponse struct {
 		} `json:"items"`
 	} `json:"data"`
 }
+
+type HistoryRequest struct {
+	MovieName    string  `json:"movie_name"`
+	MovieSlug    string  `json:"movie_slug"`
+	MoviePoster  *string `json:"movie_poster"`
+	MovieEpisode string  `json:"movie_episode"`
+}
