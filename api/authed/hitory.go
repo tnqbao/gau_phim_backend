@@ -81,7 +81,7 @@ func UpdateHistoryView(c *gin.Context) {
 		MovieSlug:    req.MovieSlug,
 		MoviePoster:  *req.MoviePoster,
 		MovieEpisode: req.MovieEpisode,
-		CreateAt:     time.Now().Format("2006-01-02 15:04:05"),
+		CreatedAt:    time.Now().Format("2006-01-02 15:04:05"),
 	}
 	var existing models.History
 	if err := db.Where("user_id = ? AND slug = ?", userId, req.MovieSlug).First(&existing).Error; err != nil {
@@ -96,7 +96,7 @@ func UpdateHistoryView(c *gin.Context) {
 		}
 	} else {
 		existing.MovieEpisode = req.MovieEpisode
-		existing.CreateAt = time.Now().Format("2006-01-02 15:04:05")
+		existing.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 		if req.MoviePoster != nil {
 			existing.MoviePoster = *req.MoviePoster
 		}
