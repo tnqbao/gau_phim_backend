@@ -41,11 +41,10 @@ func GetHistoryView(c *gin.Context) {
 		Where("user_id = ?", userId).
 		Count(&totalIteam).Error; err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get total items"})
+		return
 	}
 
 	totalPage := totalIteam / 24
-
-	c.JSON(500, gin.H{"error": "Fail to get history view"})
 
 	if len(historyView) == 0 {
 		c.JSON(404, gin.H{"message": "No history view found"})
