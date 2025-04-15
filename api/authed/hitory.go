@@ -28,7 +28,7 @@ func GetHistoryView(c *gin.Context) {
 		Model(&models.History{}).
 		Select("slug, title, poster_url, movie_episode, created_at").
 		Where("user_id = ?", userId).
-		Order("year DESC, modified DESC").
+		Order("created_at DESC").
 		Limit(24).
 		Offset((page - 1) * 24).
 		Find(&historyView).Error; err != nil {
