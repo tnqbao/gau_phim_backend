@@ -7,5 +7,5 @@ type History struct {
 	MovieSlug    string `json:"slug" gorm:"index;column:slug"`
 	MoviePoster  string `json:"poster_url" gorm:"column:poster_url"`
 	MovieEpisode string `json:"movie_episode" gorm:"column:movie_episode"`
-	CreateAt     string `json:"create_at" gorm:"column:create_at"`
+	CreatedAt    string `json:"create_at" gorm:"column:created_at"`
 }
