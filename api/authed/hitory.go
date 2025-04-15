@@ -56,9 +56,10 @@ func GetHistoryView(c *gin.Context) {
 }
 
 func UpdateHistoryView(c *gin.Context) {
-	userId, exists := c.Get("user_id")
+
 	db := c.MustGet("db").(*gorm.DB)
 	var req utils.HistoryRequest
+	userId, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(401, gin.H{"error": "User ID not found in context"})
 		return

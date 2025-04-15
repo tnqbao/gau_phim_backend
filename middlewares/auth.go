@@ -12,10 +12,15 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("auth_token")
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization cookie is required"})
-			c.Abort()
-			return
+		if err != nil || tokenString == "" {
+			authHeader := c.GetHeader("Authorization")
+			if authHeader != "" {
+				tokenString = authHeader
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token is required"})
+				c.Abort()
+				return
+			}
 		}
 		token, err := validateToken(tokenString)
 		if err != nil {
