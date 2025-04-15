@@ -57,8 +57,8 @@ type ApiResponse struct {
 }
 
 type HistoryRequest struct {
-	MovieName    string  `json:"movie_name"`
-	MovieSlug    string  `json:"movie_slug"`
-	MoviePoster  *string `json:"movie_poster"`
+	MovieName    string  `json:"title"`
+	MovieSlug    string  `json:"slug"`
+	MoviePoster  *string `json:"poster_url"`
 	MovieEpisode string  `json:"movie_episode"`
 }
