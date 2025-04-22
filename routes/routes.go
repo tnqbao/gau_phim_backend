@@ -19,10 +19,13 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	{
 		publicRouter := apiRoutes.Group("/")
 		{
+			publicRouter.GET("/all-movies", controller.GetAllMovie)
 			publicRouter.GET("/home-page", controller.GetHomePageData)
 			publicRouter.GET("/category/:slug", controller.GetListMovieByCategory)
 			publicRouter.GET("/type/:slug", controller.GetListMovieByType)
 			publicRouter.GET("/nation/:slug", controller.GetListMovieByNation)
+
+			publicRouter.POST("/search", controller.SearchMovieByKeyWord)
 
 		}
 		adminRoutes := apiRoutes.Group("/")
@@ -30,9 +33,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			adminRoutes.Use(middlewares.AuthMiddleware(), middlewares.AdminMiddleware())
 			adminRoutes.PUT("/crawl", controller.CrawlMovieFromUrl)
 			adminRoutes.POST("/movie", controller.CreateMovie)
+
 			adminRoutes.PUT("/home-page/hero", controller.UpdateHeroHomePage)
 			adminRoutes.PUT("/home-page/release", controller.UpdateReleaseHomePage)
 			adminRoutes.PUT("/home-page/featured", controller.UpdateFeaturedHomePage)
+			//search
+			adminRoutes.POST("/index", controller.IndexAllMovies)
 		}
 
 		authedRoutes := apiRoutes.Group("/")
