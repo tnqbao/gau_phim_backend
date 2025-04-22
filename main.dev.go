@@ -18,7 +18,7 @@ func main() {
 
 	config.InitRedis()
 	db := config.InitDB()
-
+	config.InitMeiliSearch()
 	router := routes.SetupRouter(db)
 	router.Run(":8083")
 }

@@ -17,7 +17,7 @@ func main() {
 	}
 
 	config.InitRedis()
-
+	config.InitMeiliSearch()
 	db := config.InitDB()
 
 	router := routes.SetupRouter(db)

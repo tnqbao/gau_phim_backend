@@ -1,4 +1,4 @@
-package movie
+package controller
 
 import (
 	"encoding/json"
@@ -124,5 +124,22 @@ func CrawlMovieFromUrl(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Crawl movie from URL hoàn tất",
 		"Đã thêm": count,
+	})
+}
+
+func GetAllMovie(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	var movies []models.Movie
+	if err := db.Preload("Categories").Preload("Nations").Find(&movies).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  "Lỗi khi lấy danh sách phim: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   movies,
 	})
 }
