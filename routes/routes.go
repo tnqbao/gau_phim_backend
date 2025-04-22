@@ -2,10 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tnqbao/gau_phim_backend/api/admin"
-	"github.com/tnqbao/gau_phim_backend/api/admin/movie"
-	"github.com/tnqbao/gau_phim_backend/api/authed"
-	"github.com/tnqbao/gau_phim_backend/api/public"
+	"github.com/tnqbao/gau_phim_backend/controller"
 	"github.com/tnqbao/gau_phim_backend/middlewares"
 	"gorm.io/gorm"
 )
@@ -22,33 +19,33 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	{
 		publicRouter := apiRoutes.Group("/")
 		{
-			publicRouter.GET("/home-page", public.GetHomePageData)
-			publicRouter.GET("/category/:slug", public.GetListMovieByCategory)
-			publicRouter.GET("/type/:slug", public.GetListMovieByType)
-			publicRouter.GET("/nation/:slug", public.GetListMovieByNation)
+			publicRouter.GET("/home-page", controller.GetHomePageData)
+			publicRouter.GET("/category/:slug", controller.GetListMovieByCategory)
+			publicRouter.GET("/type/:slug", controller.GetListMovieByType)
+			publicRouter.GET("/nation/:slug", controller.GetListMovieByNation)
 
 		}
 		adminRoutes := apiRoutes.Group("/")
 		{
 			adminRoutes.Use(middlewares.AuthMiddleware(), middlewares.AdminMiddleware())
-			adminRoutes.PUT("/crawl", movie.CrawlMovieFromUrl)
-			adminRoutes.POST("/movie", movie.CreateMovie)
-			adminRoutes.PUT("/home-page/hero", admin.UpdateHeroHomePage)
-			adminRoutes.PUT("/home-page/release", admin.UpdateReleaseHomePage)
-			adminRoutes.PUT("/home-page/featured", admin.UpdateFeaturedHomePage)
+			adminRoutes.PUT("/crawl", controller.CrawlMovieFromUrl)
+			adminRoutes.POST("/movie", controller.CreateMovie)
+			adminRoutes.PUT("/home-page/hero", controller.UpdateHeroHomePage)
+			adminRoutes.PUT("/home-page/release", controller.UpdateReleaseHomePage)
+			adminRoutes.PUT("/home-page/featured", controller.UpdateFeaturedHomePage)
 		}
 
 		authedRoutes := apiRoutes.Group("/")
 		{
 			authedRoutes.Use(middlewares.AuthMiddleware())
-			authedRoutes.POST("/like", authed.AddMovieLiked)
-			authedRoutes.GET("/likes", authed.GetListMovieLiked)
-			authedRoutes.DELETE("/like", authed.RemoveMovieLiked)
+			authedRoutes.POST("/like", controller.AddMovieLiked)
+			authedRoutes.GET("/likes", controller.GetListMovieLiked)
+			authedRoutes.DELETE("/like", controller.RemoveMovieLiked)
 
-			authedRoutes.GET("/history", authed.GetHistoryView)
-			authedRoutes.POST("/history", authed.UpdateHistoryView)
-			authedRoutes.DELETE("/history/:slug", authed.DeleteHistoryViewForSlug)
-			authedRoutes.DELETE("/history", authed.DeleteAllHistoryView)
+			authedRoutes.GET("/history", controller.GetHistoryWatched)
+			authedRoutes.POST("/history", controller.UpdateHistoryWatched)
+			authedRoutes.DELETE("/history/:slug", controller.DeleteHistoryWatchedForSlug)
+			authedRoutes.DELETE("/history", controller.DeleteAllHistoryWatched)
 		}
 
 	}

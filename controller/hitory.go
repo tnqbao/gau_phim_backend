@@ -1,4 +1,4 @@
-package authed
+package controller
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetHistoryView(c *gin.Context) {
+func GetHistoryWatched(c *gin.Context) {
 	userId, exists := c.Get("user_id")
 	db := c.MustGet("db").(*gorm.DB)
 	page, err := strconv.Atoi(c.Query("page"))
@@ -23,7 +23,7 @@ func GetHistoryView(c *gin.Context) {
 		return
 	}
 
-	historyView := []models.History{}
+	historyWatched := []models.History{}
 	if err := db.
 		Model(&models.History{}).
 		Select("slug, title, poster_url, movie_episode, created_at").
@@ -31,7 +31,7 @@ func GetHistoryView(c *gin.Context) {
 		Order("created_at DESC").
 		Limit(24).
 		Offset((page - 1) * 24).
-		Find(&historyView).Error; err != nil {
+		Find(&historyWatched).Error; err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch history view"})
 		return
 	}
@@ -46,15 +46,15 @@ func GetHistoryView(c *gin.Context) {
 
 	totalPage := totalIteam / 24
 
-	if len(historyView) == 0 {
+	if len(historyWatched) == 0 {
 		c.JSON(404, gin.H{"message": "No history view found"})
 		return
 	}
 
-	c.JSON(200, gin.H{"history": historyView, "current_page": page, "total_page": totalPage})
+	c.JSON(200, gin.H{"history": historyWatched, "current_page": page, "total_page": totalPage})
 }
 
-func UpdateHistoryView(c *gin.Context) {
+func UpdateHistoryWatched(c *gin.Context) {
 
 	db := c.MustGet("db").(*gorm.DB)
 	var req utils.HistoryRequest
@@ -108,7 +108,7 @@ func UpdateHistoryView(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Update history view successfully"})
 }
 
-func DeleteHistoryViewForSlug(c *gin.Context) {
+func DeleteHistoryWatchedForSlug(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	userId, exists := c.Get("user_id")
 	if !exists {
@@ -140,7 +140,7 @@ func DeleteHistoryViewForSlug(c *gin.Context) {
 
 }
 
-func DeleteAllHistoryView(c *gin.Context) {
+func DeleteAllHistoryWatched(c *gin.Context) {
 
 	db := c.MustGet("db").(*gorm.DB)
 	userId, exists := c.Get("user_id")
