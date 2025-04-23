@@ -33,6 +33,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			adminRoutes.Use(middlewares.AuthMiddleware(), middlewares.AdminMiddleware())
 			adminRoutes.PUT("/crawl", controller.CrawlMovieFromUrl)
 			adminRoutes.POST("/movie", controller.CreateMovie)
+			adminRoutes.DELETE("/movie/:slug", controller.DeleteMovieBySlug)
+			adminRoutes.POST("/movie", controller.DeleteMovieByListSlug)
 
 			adminRoutes.PUT("/home-page/hero", controller.UpdateHeroHomePage)
 			adminRoutes.PUT("/home-page/release", controller.UpdateReleaseHomePage)
