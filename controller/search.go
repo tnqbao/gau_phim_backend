@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/meilisearch/meilisearch-go"
 	"github.com/tnqbao/gau_phim_backend/config"
@@ -83,4 +84,16 @@ func IndexAllMovies(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "✅ Movies indexed successfully"})
+}
+
+func DeleteAllIndexes(c *gin.Context) {
+	deleteRe, err := config.MeiliClient.DeleteIndex("movies")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete 'movies' index"})
+		return
+	} else {
+		fmt.Println(deleteRe)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "✅ 'Movies' index deleted successfully"})
 }

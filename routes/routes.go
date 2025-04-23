@@ -41,6 +41,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			adminRoutes.PUT("/home-page/featured", controller.UpdateFeaturedHomePage)
 			//search
 			adminRoutes.POST("/index", controller.IndexAllMovies)
+			adminRoutes.DELETE("/index", controller.DeleteAllIndexes)
 		}
 
 		authedRoutes := apiRoutes.Group("/")
