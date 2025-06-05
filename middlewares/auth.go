@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"net/http"
 	"os"
 
@@ -12,16 +13,16 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("auth_token")
-		if err != nil || tokenString == "" {
-			authHeader := c.GetHeader("Authorization")
-			if authHeader != "" {
-				tokenString = authHeader
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token is required"})
-				c.Abort()
-				return
-			}
+		if err != nil {
+			tokenString = c.GetHeader("Authorization")
 		}
+
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization cookie is required"})
+			c.Abort()
+			return
+		}
+
 		token, err := validateToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -29,8 +30,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			if userIdFloat, ok := claims["user_id"].(float64); ok {
-				c.Set("user_id", uint(userIdFloat))
+			if userIDStr, ok := claims["user_id"].(string); ok {
+				userId, err := uuid.Parse(userIDStr)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user_id format"})
+					c.Abort()
+					return
+				}
+				c.Set("user_id", userId)
 			} else {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user_id format"})
 				c.Abort()
